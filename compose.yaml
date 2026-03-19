@@ -8,9 +8,9 @@ services:
     restart: always
     environment:
       MARIADB_DATABASE: ${DB_NAME} # (1.2) กำหนดชื่อฐานข้อมูลให้สอดคล้องกับ .env [4]
-        MARIADB_ROOT_PASSWORD_FILE: /run/secrets/_________  # (1.3) เติมชื่อ Secret
+        MARIADB_ROOT_PASSWORD_FILE: /run/secrets/db_root_pass  # (1.3) เติมชื่อ Secret
           MARIADB_USER: ${DB_USER} # (1.4) กำหนดชื่อผู้ใช้ฐานข้อมูลให้สอดคล้องกับ .env [4]
-            MARIADB_PASSWORD_FILE: /run/secrets/__________  # (1.5) เติมชื่อ Secret
+            MARIADB_PASSWORD_FILE: /run/secrets/db_user_pass  # (1.5) เติมชื่อ Secret
     networks:
       - backend-zone  # (1.6) ต้องเชื่อมกับวงปิดสำหรับ DB
     volumes:
