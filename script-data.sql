@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS students (
 -- 2. เพิ่มข้อมูลจำลองโดยเน้นข้อมูลนักศึกษา [2, 3]
 -- แถวแรก: ข้อมูลของผู้สอบ (นักศึกษาต้องเปลี่ยนเป็นข้อมูลจริงของตนเอง)
 INSERT INTO students (student_id, full_name, username, email, project_name, status) VALUES 
-('ใส่รหัสนศ.ของคุณ', 'ใส่ชื่อ-นามสกุลของคุณ', 'ใส่ชื่อบัญชีของคุณ', 'ใส่ชื่ออีเมลของคุณ', 'Web Administration', 'Purposal');
+('1660701374', 'Plarakon Niamyam', 'plarakon.niam', 'plarakon.niam@bumail.net', 'Web Administration', 'Purposal');
 
 -- ข้อมูลจำลองอื่นๆ เพื่อความสวยงาม
 INSERT INTO students (student_id, full_name, username, email, project_name, status) VALUES 

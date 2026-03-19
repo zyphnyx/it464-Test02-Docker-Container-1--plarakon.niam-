@@ -12,18 +12,18 @@ services:
           MARIADB_USER: ${DB_USER} # (1.4) กำหนดชื่อผู้ใช้ฐานข้อมูลให้สอดคล้องกับ .env [4]
             MARIADB_PASSWORD_FILE: /run/secrets/__________  # (1.5) เติมชื่อ Secret
     networks:
-      - _________-zone  # (1.6) ต้องเชื่อมกับวงปิดสำหรับ DB
+      - backend-zone  # (1.6) ต้องเชื่อมกับวงปิดสำหรับ DB
     volumes:
-      - __________:var/lib/mysql  # (1.7) เติมชื่อ Named Volume ที่ประกาศด้านล่าง [5.1]
+      - db-volume:/var/lib/mysql  # (1.7) เติมชื่อ Named Volume ที่ประกาศด้านล่าง [5.1]
     secrets:
-      - __________ # (1.8) เติมชื่อ Secret ที่ประกาศด้านล่าง [10]
+      - db_root_pass # (1.8) เติมชื่อ Secret ที่ประกาศด้านล่าง [10]
 
   # 2. ส่วนประมวลผล (Backend)
   backend-php:
     image: bitnami/php-fpm:latest
     container_name: ${MY_USERNAME}-php # (2.1) กำหนดชื่อคอนเทนเนอร์ให้สอดคล้องกับ .env [4]
     volumes:
-      - ./_______:/var/www/html # (2.2) เติมชื่อโฟลเดอร์ที่เก็บไฟล์โค้ดของ Backend
+      - ./app:/var/www/html # (2.2) เติมชื่อโฟลเดอร์ที่เก็บไฟล์โค้ดของ Backend
     networks:
       - backend-zone
     ##secrets: # (2.3) ถ้าต้องการให้ Backend ใช้รหัสผ่านฐานข้อมูลจาก Secret ให้เปิดบรรทัดนี้และเติมชื่อ Secret ที่ประกาศด้านล่าง [10]
@@ -38,27 +38,27 @@ services:
     ports:
       - "${HTTP_PORT}:80"  # (3.3) กำหนดพอร์ตให้สอดคล้องกับ .env [4]
     configs:
-      - source: _____________ # (3.4) เติมชื่อ Config ที่ประกาศด้านล่าง [10]
+      - source: my-nginx.conf # (3.4) เติมชื่อ Config ที่ประกาศด้านล่าง [10]
         target: /etc/nginx/conf.d/default.conf
     networks:
-      - _________-zone  # (3.5) เชื่อมกับผู้ใช้ภายนอก [2]
+      - frontend-zone  # (3.5) เชื่อมกับผู้ใช้ภายนอก [2]
       - backend-zone
     depends_on:
       - db-server
-      - backend-________ # (3.6) เติมชื่อบริการ Backend ที่ประกาศด้านบน [2]
+      - backend-zone # (3.6) เติมชื่อบริการ Backend ที่ประกาศด้านบน [2]
 
   # 4. ส่วนจัดการฐานข้อมูล (phpMyAdmin)
   db-management:
     image: phpmyadmin:latest
     container_name: ${MY_USERNAME}-pma # (4.1) กำหนดชื่อคอนเทนเนอร์ให้สอดคล้องกับ .env [4]
     environment:
-      PMA_HOST: ____________ # (4.2) เติมชื่อบริการฐานข้อมูลที่ประกาศด้านบน [1]
-      PMA_PASSWORD_FILE: /run/secrets/____________ # (4.3) เติมชื่อ Secret ที่ประกาศด้านล่าง [10]
+      PMA_HOST: ${db-node} # (4.2) เติมชื่อบริการฐานข้อมูลที่ประกาศด้านบน [1]
+      PMA_PASSWORD_FILE: /run/secrets/db_root_pass # (4.3) เติมชื่อ Secret ที่ประกาศด้านล่าง [10]
     ports:
       - "${PMA_PORT}:80" # (4.4) กำหนดพอร์ตให้สอดคล้องกับ .env [4]
     networks:
       - frontend-zone
-      - ________-zone # (4.5) เชื่อมกับวงปิดสำหรับ DB [2]
+      - backend-zone # (4.5) เชื่อมกับวงปิดสำหรับ DB [2]
     secrets:
       - db_root_pass
     depends_on:
@@ -76,8 +76,8 @@ volumes:
 
 configs:
   my-nginx-conf:
-file: ./_________/my-nginx.conf # (5.2) เติมชื่อโฟลเดอร์ที่เก็บไฟล์คอนฟิก
+file: ./my-nginx.conf # (5.2) เติมชื่อโฟลเดอร์ที่เก็บไฟล์คอนฟิก
 
 secrets:
   db_root_pass:
-file: __________/____________ # (5.3) เติมชื่อโฟลเดอร์และไฟล์ที่เก็บรหัสผ่านของฐานข้อมูล
+file: sercrets/db_root_pass # (5.3) เติมชื่อโฟลเดอร์และไฟล์ที่เก็บรหัสผ่านของฐานข้อมูล
